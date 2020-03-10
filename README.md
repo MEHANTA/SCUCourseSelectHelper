@@ -42,7 +42,7 @@
 
 
 
-# yhton
+# Pyhton
 
 本脚本可适用于`Python3.6`环境下，不支持`Python2`环境
 
