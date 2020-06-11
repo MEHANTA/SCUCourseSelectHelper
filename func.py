@@ -47,15 +47,15 @@ def getAleadyCourse(session):
 def courseSelect(session, each_course, aleadySelectCourse):
     print("课程名:" + each_course['kcm'] + " 教师:" + each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']))
     if each_course['bkskyl'] > 0 and courseName not in (course for course in aleadySelectCourse) and courseNum == \
-            each_course['kch']:
+            each_course['kch'] and coursekxhNum == each_course['kxh']:
         kcm = each_course['kcm']  # 课程名
         kch = each_course['kch']  # 课程号
         kxh = each_course['kxh']  # 课序号
         status = queryTeacherJL(session, kch, kxh)
         if status is None:
             return
-        kcms = getKcms(kcm + "_" + kxh)  # 获得编码后的课程信息
-        course_name = kch + "@" + kxh + "@" + kcm
+        kcms = getKcms(kcm + "(" + kch + "@" + kxh + ")" )  # 获得编码后的课程信息
+        course_name = kch + "@" + kxh + "@" + selectcourse_xueqi
         tokenValue = getTokenValue(session)
         if tokenValue is None:
             return
@@ -65,7 +65,7 @@ def courseSelect(session, each_course, aleadySelectCourse):
             'kcIds': course_name,
             'kcms': kcms,
             'sj': '0_0',
-            'searchtj': course_name,
+            'searchtj': '',
             'kclbdm': '',
             'inputCode': '',
             'tokenValue': tokenValue
@@ -102,7 +102,7 @@ def getFreeCourseList(session):
 
 def queryTeacherJL(session, kch, kxh):
     data ={
-        "id": selectcourse_xueqi + "@" + kch + "@" + kxh
+        "id": selectcourse_xueqi + "@" + kch + "@" + selectcourse_xueqi
     }
     try:
         response = session.post(url=queryTeacherJL_url, data=data, headers=header).content.decode()
