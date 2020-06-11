@@ -26,6 +26,7 @@ j_username = info[0].strip('\n')
 j_password = hashlib.md5(info[1].strip('\n').encode()).hexdigest()
 courseName = info[2].strip('\n')
 courseNum = info[3].strip('\n')
+coursekxhNum = info[4].strip('\n')
 list_data = {
     'searchtj': courseName,
     'xq': 0,
