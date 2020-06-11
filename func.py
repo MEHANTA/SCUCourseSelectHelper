@@ -51,8 +51,11 @@ def courseSelect(session, each_course, aleadySelectCourse):
         kcm = each_course['kcm']  # 课程名
         kch = each_course['kch']  # 课程号
         kxh = each_course['kxh']  # 课序号
+        status = queryTeacherJL(session, kch, kxh)
+        if status is None:
+            return
         kcms = getKcms(kcm + "_" + kxh)  # 获得编码后的课程信息
-        course_name = kch + "_" + kxh + "_" + kcm
+        course_name = kch + "@" + kxh + "@" + kcm
         tokenValue = getTokenValue(session)
         if tokenValue is None:
             return
@@ -97,6 +100,17 @@ def getFreeCourseList(session):
         return None
 
 
+def queryTeacherJL(session, kch, kxh):
+    data ={
+        "id": selectcourse_xueqi + "@" + kch + "@" + kxh
+    }
+    try:
+        response = session.post(url=queryTeacherJL_url, data=data, headers=header).content.decode()
+        if(response):
+            return response
+    except:
+        return None
+    
 def main(session):
     while True:
         # 下载验证码
