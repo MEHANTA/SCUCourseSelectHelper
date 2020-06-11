@@ -1,14 +1,10 @@
+# 更新日志
+
+2020.6.11 修复2020年6月选课失败的错误
+
+
 # 序言
 
-
-
->针对2020年下学期的选课失败已经修复!
-
-
->针对2020年下学期的选课失败已经修复!
-
-
->针对2020年下学期的选课失败已经修复!
 
 
 有学弟来找我说选课很困难，选不到课很难受
@@ -70,7 +66,7 @@ pip install requests
 
 # 使用方法
 
-![](https://a2u13-pic.oss-cn-chengdu.aliyuncs.com/pic/20200310164032.png)
+![](https://a2u13-pic.oss-accelerate.aliyuncs.com/pic/20200611233420.png)
 
 配置`config.txt`文件，然后按要求输入即可
 
@@ -89,6 +85,8 @@ pip install requests
 ![](https://a2u13-pic.oss-cn-chengdu.aliyuncs.com/pic/20200310164323.png)
 
 在`main.py`文件中启动脚本，输入验证码即可开始选课！
+
+如果出现提示`gbk`有关的错误，请在终端命令行执行`python main.py`
 
 他会选择与设置课程号一致的课程进行选择，从而防止了选错课程
 
