@@ -23,7 +23,8 @@ def login(session):
         'j_captcha': input("请输入验证码:")
     }
     try:
-        response = session.post(url=login_url, headers=header, data=login_data).text
+        response = session.post(
+            url=login_url, headers=header, data=login_data).text
         if "欢迎您" in response:
             print("登陆成功！")
             return "success"
@@ -36,16 +37,19 @@ def login(session):
 def getAleadyCourse(session):
     aleady_select_course_list = []
     try:
-        response = session.get(url=aleady_select_course_url, headers=header).text
+        response = session.get(
+            url=aleady_select_course_url, headers=header).text
         for each in json.loads(response)['xkxx'][0]:
-            aleady_select_course_list.append(json.loads(response)['xkxx'][0][each]['courseName'])
+            aleady_select_course_list.append(json.loads(
+                response)['xkxx'][0][each]['courseName'])
         return aleady_select_course_list
     except:
         return None
 
 
 def courseSelect(session, each_course, aleadySelectCourse):
-    print("课程名:" + each_course['kcm'] + " 教师:" + each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']))
+    print("课程名:" + each_course['kcm'] + " 教师:" +
+          each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']))
     if each_course['bkskyl'] > 0 and courseName not in (course for course in aleadySelectCourse) and courseNum == \
             each_course['kch'] and coursekxhNum == each_course['kxh']:
         kcm = each_course['kcm']  # 课程名
@@ -54,7 +58,7 @@ def courseSelect(session, each_course, aleadySelectCourse):
         status = queryTeacherJL(session, kch, kxh)
         if status is None:
             return
-        kcms = getKcms(kcm + "(" + kch + "@" + kxh + ")" )  # 获得编码后的课程信息
+        kcms = getKcms(kcm + "(" + kch + "@" + kxh + ")")  # 获得编码后的课程信息
         course_name = kch + "@" + kxh + "@" + selectcourse_xueqi
         tokenValue = getTokenValue(session)
         if tokenValue is None:
@@ -94,23 +98,26 @@ def getKcms(kms):
 
 def getFreeCourseList(session):
     try:
-        response = session.post(url=courseList_url, headers=header, data=list_data).content.decode()
+        response = session.post(
+            url=courseList_url, headers=header, data=list_data).content.decode()
         return ast.literal_eval(json.loads(response)['rwRxkZlList'])
     except:
         return None
 
 
 def queryTeacherJL(session, kch, kxh):
-    data ={
+    data = {
         "id": selectcourse_xueqi + "@" + kch + "@" + selectcourse_xueqi
     }
     try:
-        response = session.post(url=queryTeacherJL_url, data=data, headers=header).content.decode()
+        response = session.post(url=queryTeacherJL_url,
+                                data=data, headers=header).content.decode()
         if(response):
             return response
     except:
         return None
-    
+
+
 def main(session):
     while True:
         # 下载验证码
