@@ -61,7 +61,7 @@ def courseSelect(session, each_course, aleadySelectCourse):
             return
         select_data = {
             'dealType': 5,
-            'fajhh': 3465,
+            'fajhh': "",
             'kcIds': course_name,
             'kcms': kcms,
             'sj': '0_0',
