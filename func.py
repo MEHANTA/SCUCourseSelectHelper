@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import ast
 import json
 import random
@@ -30,7 +31,8 @@ def login(session):
             return "success"
         else:
             return "failed"
-    except:
+    except Exception as e:
+        print("def login() 出现问题:" + str(e))
         return None
 
 
@@ -43,7 +45,8 @@ def getAleadyCourse(session):
             aleady_select_course_list.append(json.loads(
                 response)['xkxx'][0][each]['courseName'])
         return aleady_select_course_list
-    except:
+    except Exception as e:
+        print("def getAleadyCourse() 出现问题:" + str(e))
         return None
 
 
@@ -74,9 +77,12 @@ def courseSelect(session, each_course, aleadySelectCourse):
             'inputCode': '',
             'tokenValue': tokenValue
         }
-        c = session.post(url=select_url, data=select_data).text
-        print("选课状态：", c)
-        exit(130)
+        try:
+            c = session.post(url=select_url, data=select_data).text
+            print("选课状态：", c)
+            exit(130)
+        except Exception as e:
+            print("def courseSelect() 出现问题:" + str(e))
     else:
         pass
 
@@ -85,7 +91,8 @@ def getTokenValue(session):
     try:
         response = session.get(url=courseSelect_url, headers=header).text
         return re.compile("([a-fA-F0-9]{32})").findall(response)[0]
-    except:
+    except Exception as e:
+        print("def getTokenValue() 出现问题:" + str(e))
         return None
 
 
@@ -101,7 +108,8 @@ def getFreeCourseList(session):
         response = session.post(
             url=courseList_url, headers=header, data=list_data).content.decode()
         return ast.literal_eval(json.loads(response)['rwRxkZlList'])
-    except:
+    except Exception as e:
+        print("def getFreeCourseList() 出现问题:" + str(e))
         return None
 
 
@@ -114,7 +122,8 @@ def queryTeacherJL(session, kch, kxh):
                                 data=data, headers=header).content.decode()
         if(response):
             return response
-    except:
+    except Exception as e:
+        print("def queryTeacherJL() 出现问题:" + str(e))
         return None
 
 
@@ -123,7 +132,8 @@ def main(session):
         # 下载验证码
         try:
             downloadCaptcha(session)
-        except:
+        except Exception as e:
+            print("def downloadCaptcha() 出现问题:" + str(e))
             continue
         # 登录
         loginResponse = login(session)

@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import hashlib
 
 captcha_url = "http://zhjw.scu.edu.cn/img/captcha.jpg"  # 验证码地址
