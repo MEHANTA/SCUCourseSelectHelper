@@ -20,7 +20,7 @@ header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3782.0 Safari/537.36 Edg/76.0.152.0'
 }
 
-with open("config.txt", "r") as f:
+with open("config.txt", "r", encoding='utf-8') as f:
     info = f.readlines()
 j_username = info[0].strip('\n')
 j_password = hashlib.md5(info[1].strip('\n').encode()).hexdigest()
