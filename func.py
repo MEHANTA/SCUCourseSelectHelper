@@ -98,7 +98,7 @@ def courseSelect(session, each_course, aleadySelectCourse):
             'kcIds': course_name,
             'kcms': kcms,
             'sj': '0_0',
-            'searchtj': '',
+            'searchtj': courseName,
             'kclbdm': '',
             'inputCode': '',
             'tokenValue': tokenValue
