@@ -59,6 +59,8 @@
 
 就三个依赖库就不写`requestsments.txt`文档了
 
+如果不需要验证码自动识别功能则无需安装`muggle_ocr`库
+
 ```shell
 pip install Pillow
 pip install requests
