@@ -55,11 +55,12 @@
 
 # 依赖安装
 
-就两个依赖库就不写`requestsments.txt`文档了
+就三个依赖库就不写`requestsments.txt`文档了
 
 ```shell
 pip install Pillow
 pip install requests
+pip install muggle_ocr
 ```
 
 # 使用方法
