@@ -4,7 +4,6 @@ import json
 import random
 import re
 import time
-
 from PIL import Image
 
 from config import *
@@ -13,28 +12,55 @@ from config import *
 def downloadCaptcha(session):
     with open("captcha.jpg", "wb") as f:
         f.write(session.get(url=captcha_url, headers=header).content)
-    img = Image.open('captcha.jpg')
-    img.show()
 
 
 def login(session):
-    login_data = {
-        'j_username': j_username,
-        'j_password': j_password,
-        'j_captcha': input("请输入验证码:")
-    }
-    try:
-        response = session.post(
-            url=login_url, headers=header, data=login_data).text
-        if "欢迎您" in response:
-            print("登陆成功！")
-            return "success"
-        else:
-            return "failed"
-    except Exception as e:
-        print("def login() 出现问题:" + str(e))
-        return None
-
+    cpaptcha_switch = input("是否尝试自动识别验证码?[y/n]")
+    if cpaptcha_switch == 'y' or cpaptcha_switch == 'Y':
+        import muggle_ocr
+        while True:
+            with open("captcha.jpg", 'rb') as f:
+                captcha_bytes = f.read()
+                sdk = muggle_ocr.SDK(model_type=muggle_ocr.ModelType.Captcha)
+                text = sdk.predict(image_bytes=captcha_bytes)
+                login_data = {
+                    'j_username': j_username,
+                    'j_password': j_password,
+                    'j_captcha': text
+                }
+                print("识别的验证码为:{}".format(text))
+                try:
+                    response = session.post(
+                        url=login_url, headers=header, data=login_data).text
+                    if "欢迎您" in response:
+                        print("登陆成功！")
+                        return "success"
+                    else:
+                        print("自动识别验证码失败，三秒后准备尝试重新登录!")
+                        time.sleep(3)
+                        return "failed"
+                except Exception as e:
+                    print("def login() 出现问题:" + str(e))
+                    return None
+    else:
+        img = Image.open('captcha.jpg')
+        img.show()
+        login_data = {
+            'j_username': j_username,
+            'j_password': j_password,
+            'j_captcha': input("请输入验证码:")
+        }
+        try:
+            response = session.post(
+                url=login_url, headers=header, data=login_data).text
+            if "欢迎您" in response:
+                print("登陆成功！")
+                return "success"
+            else:
+                return "failed"
+        except Exception as e:
+            print("def login() 出现问题:" + str(e))
+            return None
 
 def getAleadyCourse(session):
     aleady_select_course_list = []
@@ -80,7 +106,7 @@ def courseSelect(session, each_course, aleadySelectCourse):
         try:
             c = session.post(url=select_url, data=select_data).text
             print("选课状态：", c)
-            exit(130)
+            exit()
         except Exception as e:
             print("def courseSelect() 出现问题:" + str(e))
     else:
@@ -115,7 +141,7 @@ def getFreeCourseList(session):
 
 def queryTeacherJL(session, kch, kxh):
     data = {
-        "id": selectcourse_xueqi + "@" + kch + "@" + selectcourse_xueqi
+        "id": selectcourse_xueqi + "@" + kch + "@" + kxh
     }
     try:
         response = session.post(url=queryTeacherJL_url,
