@@ -77,15 +77,13 @@ def getAleadyCourse(session):
 
 
 def courseSelect(session, each_course, aleadySelectCourse, courseName, courseNum, coursekxhNum):
-    for each_coursekxhNum in coursekxhNum.split():
-        if  courseName not in (course for course in aleadySelectCourse) and courseNum == \
-                each_course['kch'] and each_coursekxhNum == each_course['kxh']:
-            
-            if each_course['bkskyl'] <= 0:
-                print("\033[0;33;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
-                each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
-                continue
-
+    if  courseName not in (course for course in aleadySelectCourse) and courseNum == \
+            each_course['kch'] and each_course['kxh'] in coursekxhNum.split():
+        
+        if each_course['bkskyl'] <= 0:
+            print("\033[0;33;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
+            each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
+        else:
             print("\033[0;32;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
                 each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
             
@@ -114,11 +112,14 @@ def courseSelect(session, each_course, aleadySelectCourse, courseName, courseNum
             try:
                 c = session.post(url=select_url, data=select_data).text
                 print("选课状态：", c)
-                exit()
+                return True
+
             except Exception as e:
                 print("def courseSelect() 出现问题:" + str(e))
-        else:
-            pass
+    else:
+        pass
+
+    return False
 
 
 def getTokenValue(session):
@@ -194,10 +195,9 @@ def main(session):
         for i in range(len(courseNames)):
             if courseNames[i] in aleadySelectCourse:
                 select_course_idx.append(i)
-                print("\033[0;32;40m你已经选上了 %s ！\033[0m" %(courseNames[i]))
-                
+                print("\033[0;31;40m你已经选上了 %s ！\033[0m" %(courseNames[i]))
         updateCourse(select_course_idx)
-        if len(courseNums) == 0:
+        if len(courseNames) == 0:
             print("\033[0;33;40m选课完成 ^.^\033[0m")
             exit()
             
@@ -208,8 +208,9 @@ def main(session):
                 continue
             # 如果这门课没有被选择开始选课
             for each_course in courseList:
-                courseSelect(session, each_course, aleadySelectCourse,\
-                    courseNames[i], courseNums[i], coursekxhNums[i])
+                if courseSelect(session, each_course, aleadySelectCourse,\
+                    courseNames[i], courseNums[i], coursekxhNums[i]):
+                    break
             time.sleep(random.uniform(1.5, 3))
 
         clock = clock + 1
@@ -228,9 +229,9 @@ def updateCourse(select_course_idx):
     for i in range(len(courseNames)):
         if i in select_course_idx:
             continue
-        new_courseNames = courseNames[i]
-        new_courseNums = courseNums[i]
-        new_coursekxhNums = coursekxhNums[i]
+        new_courseNames.append(courseNames[i])
+        new_courseNums.append(courseNums[i])
+        new_coursekxhNums.append(coursekxhNums[i])
     
     courseNames = new_courseNames
     courseNums = new_courseNums
