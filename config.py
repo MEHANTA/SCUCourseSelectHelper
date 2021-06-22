@@ -25,12 +25,6 @@ with open("config.txt", "r", encoding='utf-8') as f:
     info = f.readlines()
 j_username = info[0].strip('\n')
 j_password = hashlib.md5(info[1].strip('\n').encode()).hexdigest()
-courseName = info[2].strip('\n')
-courseNum = info[3].strip('\n')
-coursekxhNum = info[4].strip('\n')
-list_data = {
-    'searchtj': courseName,
-    'xq': 0,
-    'jc': 0,
-    'kclbdm': ""
-}
+courseNames = info[2].strip('\n').split(';')
+courseNums = info[3].strip('\n').split(';')
+coursekxhNums = info[4].strip('\n').split(';')
