@@ -76,41 +76,50 @@ def getAleadyCourse(session):
         return None
 
 
-def courseSelect(session, each_course, aleadySelectCourse):
-    print("课程名:" + each_course['kcm'] + " 教师:" +
-          each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']))
-    if each_course['bkskyl'] > 0 and courseName not in (course for course in aleadySelectCourse) and courseNum == \
-            each_course['kch'] and coursekxhNum == each_course['kxh']:
-        kcm = each_course['kcm']  # 课程名
-        kch = each_course['kch']  # 课程号
-        kxh = each_course['kxh']  # 课序号
-        status = queryTeacherJL(session, kch, kxh)
-        if status is None:
-            return
-        kcms = getKcms(kcm + "(" + kch + "@" + kxh + ")")  # 获得编码后的课程信息
-        course_name = kch + "@" + kxh + "@" + selectcourse_xueqi
-        tokenValue = getTokenValue(session)
-        if tokenValue is None:
-            return
-        select_data = {
-            'dealType': 5,
-            'fajhh': "",
-            'kcIds': course_name,
-            'kcms': kcms,
-            'sj': '0_0',
-            'searchtj': courseName,
-            'kclbdm': '',
-            'inputCode': '',
-            'tokenValue': tokenValue
-        }
-        try:
-            c = session.post(url=select_url, data=select_data).text
-            print("选课状态：", c)
-            exit()
-        except Exception as e:
-            print("def courseSelect() 出现问题:" + str(e))
+def courseSelect(session, each_course, aleadySelectCourse, courseName, courseNum, coursekxhNum):
+    if  courseName not in (course for course in aleadySelectCourse) and courseNum == \
+            each_course['kch'] and each_course['kxh'] in coursekxhNum.split():
+        
+        if each_course['bkskyl'] <= 0:
+            print("\033[0;33;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
+            each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
+        else:
+            print("\033[0;32;40m" + "课程名:" + each_course['kcm'] + " 教师:" +
+                each_course['skjs'] + " 课余量:" + str(each_course['bkskyl']) + "\033[0m")
+            
+            kcm = each_course['kcm']  # 课程名
+            kch = each_course['kch']  # 课程号
+            kxh = each_course['kxh']  # 课序号
+            status = queryTeacherJL(session, kch, kxh)
+            if status is None:
+                return
+            kcms = getKcms(kcm + "(" + kch + "@" + kxh + ")")  # 获得编码后的课程信息
+            course_name = kch + "@" + kxh + "@" + selectcourse_xueqi
+            tokenValue = getTokenValue(session)
+            if tokenValue is None:
+                return
+            select_data = {
+                'dealType': 5,
+                'fajhh': "",
+                'kcIds': course_name,
+                'kcms': kcms,
+                'sj': '0_0',
+                'searchtj': courseName,
+                'kclbdm': '',
+                'inputCode': '',
+                'tokenValue': tokenValue
+            }
+            try:
+                c = session.post(url=select_url, data=select_data).text
+                print("选课状态：", c)
+                return True
+
+            except Exception as e:
+                print("def courseSelect() 出现问题:" + str(e))
     else:
         pass
+
+    return False
 
 
 def getTokenValue(session):
@@ -129,7 +138,13 @@ def getKcms(kms):
     return kcms
 
 
-def getFreeCourseList(session):
+def getFreeCourseList(session, courseName):
+    list_data = {
+        'searchtj': courseName,
+        'xq': 0,
+        'jc': 0,
+        'kclbdm': ""
+    }
     try:
         response = session.post(
             url=courseList_url, headers=header, data=list_data).content.decode()
@@ -175,15 +190,49 @@ def main(session):
         # 查询不到已选课程就重新查询
         if aleadySelectCourse is None:
             continue
-        if courseName in aleadySelectCourse:
-            print("你已经选择这门课了！")
+
+        select_course_idx = []
+        for i in range(len(courseNames)):
+            if courseNames[i] in aleadySelectCourse:
+                select_course_idx.append(i)
+                print("\033[0;31;40m你已经选上了 %s ！\033[0m" %(courseNames[i]))
+        updateCourse(select_course_idx)
+        if len(courseNames) == 0:
+            print("\033[0;33;40m选课完成 ^.^\033[0m")
             exit()
+            
+        for i in range(len(courseNames)):
         # 然后查询要选课程的课余量
-        courseList = getFreeCourseList(session)
-        if courseList is None:
-            continue
-        # 如果这门课没有被选择开始选课
-        for each_course in courseList:
-            courseSelect(session, each_course, aleadySelectCourse)
+            courseList = getFreeCourseList(session, courseNames[i])
+            if courseList is None:
+                continue
+            # 如果这门课没有被选择开始选课
+            for each_course in courseList:
+                if courseSelect(session, each_course, aleadySelectCourse,\
+                    courseNames[i], courseNums[i], coursekxhNums[i]):
+                    break
+            time.sleep(random.uniform(1.5, 3))
+
         clock = clock + 1
-        time.sleep(random.uniform(1.5, 3))
+
+# 更新课程情况，去除已经选择的课程
+def updateCourse(select_course_idx):
+    if len(select_course_idx) == 0:
+        return
+    global courseNames
+    global courseNums
+    global coursekxhNums
+    new_courseNames = []
+    new_courseNums = []
+    new_coursekxhNums = []
+    
+    for i in range(len(courseNames)):
+        if i in select_course_idx:
+            continue
+        new_courseNames.append(courseNames[i])
+        new_courseNums.append(courseNums[i])
+        new_coursekxhNums.append(coursekxhNums[i])
+    
+    courseNames = new_courseNames
+    courseNums = new_courseNums
+    coursekxhNums = new_coursekxhNums

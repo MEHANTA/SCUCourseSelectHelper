@@ -9,7 +9,7 @@ select_url = "http://zhjw.scu.edu.cn/student/courseSelect/selectCourse/checkInpu
 courseList_url = "http://zhjw.scu.edu.cn/student/courseSelect/freeCourse/courseList"  # 选课剩余查询地址
 aleady_select_course_url = "http://zhjw.scu.edu.cn/student/courseSelect/thisSemesterCurriculum/callback"  # 已选课程查询地址
 queryTeacherJL_url = "http://zhjw.scu.edu.cn/student/courseSelect/queryTeacherJL"
-selectcourse_xueqi = "2020-2021-2-1"
+selectcourse_xueqi = "2021-2022-1-1"
 header = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'Accept-Encoding': 'gzip, deflate',
@@ -25,12 +25,6 @@ with open("config.txt", "r", encoding='utf-8') as f:
     info = f.readlines()
 j_username = info[0].strip('\n')
 j_password = hashlib.md5(info[1].strip('\n').encode()).hexdigest()
-courseName = info[2].strip('\n')
-courseNum = info[3].strip('\n')
-coursekxhNum = info[4].strip('\n')
-list_data = {
-    'searchtj': courseName,
-    'xq': 0,
-    'jc': 0,
-    'kclbdm': ""
-}
+courseNames = info[2].strip('\n').split(';')
+courseNums = info[3].strip('\n').split(';')
+coursekxhNums = info[4].strip('\n').split(';')
